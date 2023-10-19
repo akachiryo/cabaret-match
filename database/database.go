@@ -5,8 +5,6 @@ import (
 	"log"
 	"os"
 
-	"api/models"
-
 	// GORM (Go Object Relational Mapper) をインポートする。
 	"github.com/jinzhu/gorm"
 	// MySQL ダイアレクトをインポートする。このインポートにより GORM が MySQL に接続できるようになる。
@@ -41,7 +39,4 @@ func Connect() {
 	if err != nil {
 		log.Fatalf("Could not connect to the database: %v", err)
 	}
-
-	// 指定されたモデルに基づいてデータベースのテーブルを自動生成または更新する。
-	DB.AutoMigrate(&models.Host{})
 }

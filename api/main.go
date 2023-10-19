@@ -2,8 +2,9 @@ package main
 
 import (
 	"api/controllers"
-	"api/middlewares"
 	"api/database"
+	"api/middlewares"
+	"api/models"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -12,6 +13,8 @@ import (
 func main() {
 	// データベースに接続する。
     database.Connect()
+    // 指定されたモデルに基づいてデータベースのテーブルを自動生成または更新する。
+	database.DB.AutoMigrate(&models.Host{}, &models.User{})
 
     // Ginの新しいインスタンスを作成する。
 	router := gin.Default()

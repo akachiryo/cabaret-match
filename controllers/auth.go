@@ -4,6 +4,7 @@ import (
     "net/http"
 
     "api/models"
+    "api/database"
     "api/utils/token"
 
     "github.com/gin-gonic/gin"
@@ -71,7 +72,7 @@ func CurrentUser(c *gin.Context) {
 
     var user models.User
 
-    err = models.DB.First(&user, userId).Error
+    err = database.DB.First(&user, userId).Error
 
     if err != nil {
         c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
