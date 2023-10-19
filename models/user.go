@@ -1,11 +1,12 @@
 package models
 
 import (
-		"api/utils/token"
-    "strings"
+	"api/database"
+	"api/utils/token"
+	"strings"
 
-    "github.com/jinzhu/gorm"
-    "golang.org/x/crypto/bcrypt"
+	"github.com/jinzhu/gorm"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type User struct {
@@ -15,7 +16,7 @@ type User struct {
 }
 
 func (u User) Save() (User, error) {
-    err := DB.Create(&u).Error
+    err := database.DB.Create(&u).Error
 
     if err != nil {
         return User{}, err
@@ -45,7 +46,7 @@ func (u User) PrepareOutput() User {
 func GenerateToken(username string, password string) (string, error) {
     var user User
 
-    err := DB.Where("username = ?", username).First(&user).Error
+    err := database.DB.Where("username = ?", username).First(&user).Error
 
     if err != nil {
         return "", err
