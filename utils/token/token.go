@@ -37,7 +37,8 @@ func extractTokenString(c *gin.Context) string {
     return ""
 }
 
-func parseToken(tokenString string) (*jwt.Token, error) {
+// parseTokenをParseTokenに変更
+func ParseToken(tokenString string) (*jwt.Token, error) {
     token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
         if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
             return nil, fmt.Errorf("There was an error")
@@ -55,7 +56,7 @@ func parseToken(tokenString string) (*jwt.Token, error) {
 func TokenValid(c *gin.Context) error {
     tokenString := extractTokenString(c)
 
-    _, err := parseToken(tokenString)
+    _, err := ParseToken(tokenString) // ここも大文字のParseTokenに変更
 
     if err != nil {
         return err
@@ -67,7 +68,7 @@ func TokenValid(c *gin.Context) error {
 func ExtractTokenId(c *gin.Context) (uint, error) {
     tokenString := extractTokenString(c)
 
-    token, err := parseToken(tokenString)
+    token, err := ParseToken(tokenString) // こちらも大文字のParseTokenに変更
 
     if err != nil {
         return 0, err
