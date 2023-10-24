@@ -1,22 +1,31 @@
-package middlewares
+package middleware
 
 import (
-	"api/utils/token"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+
+	"api/utils"
 )
 
-func JwtAuthMiddleware() gin.HandlerFunc {
-    return func(c *gin.Context) {
-        err := token.TokenValid(c)
+func AuthMiddleware(c *gin.Context) {
+	tokenString, err := c.Cookie("token")
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"message": "Unauthorized",
+		})
+		c.Abort()
+		return
+	}
 
-        if err != nil {
-            c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
-            c.Abort()
-            return
-        }
+	_, err = utils.ParseToken(tokenString)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"message": "Invalid token",
+		})
+		c.Abort()
+		return
+	}
 
-        c.Next()
-    }
+	c.Next()
 }

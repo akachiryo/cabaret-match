@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"api/models"
+	"api/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -29,7 +30,24 @@ func RegisterHost(c *gin.Context) {
 		return
 	}
 
+	// 追加部分
+	token, err := utils.GenerateToken(host.ID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Failed to sign up",
+		})
+		return
+	}
+
+		// Cookieにトークンをセット
+	c.SetCookie("token", token, 3600, "/", "localhost", false, true)
+
 	c.JSON(http.StatusOK, gin.H{
 		"data": hostResponse,
 	})
+}
+
+func GetHost(c *gin.Context) {
+
+	c.JSON(http.StatusOK, gin.H{"成功": "成功"})
 }

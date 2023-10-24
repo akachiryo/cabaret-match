@@ -2,7 +2,6 @@ package models
 
 import (
 	"api/database"
-	"api/utils/token"
 	"strings"
 	"time"
 
@@ -84,22 +83,17 @@ func (h Host) Save() (hostResponse, error) {
 }
 
 
-func GenerateToken(email string, password string) (string, hostResponse, error) {
+func HostAuthenticated(email string, password string) (hostResponse, error) {
 	var host Host
 
 	err := database.DB.Where("email = ?", email).First(&host).Error
 	if err != nil {
-		return "", hostResponse{}, err
+		return hostResponse{}, err
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(host.Password), []byte(password))
 	if err != nil {
-		return "", hostResponse{}, err
-	}
-
-	token, err := token.GenerateToken(host.ID)
-	if err != nil {
-		return "", hostResponse{}, err
+		return hostResponse{}, err
 	}
 
 	data := hostResponse{
@@ -107,5 +101,5 @@ func GenerateToken(email string, password string) (string, hostResponse, error) 
 		Email: host.Email,
 	}
 
-	return token, data, nil
+	return data, nil
 }

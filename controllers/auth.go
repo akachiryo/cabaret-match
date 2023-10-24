@@ -1,9 +1,9 @@
 package controllers
 
 import (
-	"net/http"
-
 	"api/models"
+	"api/utils"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -21,7 +21,9 @@ func LoginHost(c *gin.Context) {
         return
     }
 
-    tokenStr, host, err := models.GenerateToken(input.Email, input.Password)
+    host, err := models.HostAuthenticated(input.Email, input.Password)
+
+    tokenStr, err := utils.GenerateToken(host.ID)
 
     if err != nil {
         c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
