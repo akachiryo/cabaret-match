@@ -11,7 +11,11 @@ require (
 	gorm.io/driver/mysql v1.5.2
 )
 
-require github.com/jinzhu/now v1.1.5 // indirect
+require (
+	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
+	github.com/golang-jwt/jwt/v5 v5.0.0 // indirect
+	github.com/jinzhu/now v1.1.5 // indirect
+)
 
 require (
 	github.com/bytedance/sonic v1.10.2 // indirect

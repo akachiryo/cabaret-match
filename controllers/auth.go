@@ -1,48 +1,19 @@
 package controllers
 
 import (
-    "net/http"
+	"api/models"
+	"api/utils"
+	"net/http"
 
-    "api/models"
-    "api/database"
-    "api/utils/token"
-
-    "github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin"
 )
 
-type RegisterInput struct {
-    Username string `json:"username" binding:"required"`
-    Password string `json:"password" binding:"required"`
-}
-
-func Register(c *gin.Context) {
-    var input RegisterInput
-
-    if err := c.ShouldBindJSON(&input); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-        return
-    }
-
-    user := models.User{Username: input.Username, Password: input.Password}
-
-    user, err := user.Save()
-
-    if err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-        return
-    }
-
-    c.JSON(http.StatusOK, gin.H{
-        "data": user.PrepareOutput(),
-    })
-}
-
 type LoginInput struct {
-    Username string `json:"username" binding:"required"`
+    Email string `json:"email" binding:"required"`
     Password string `json:"password" binding:"required"`
 }
 
-func Login(c *gin.Context) {
+func LoginHost(c *gin.Context) {
     var input LoginInput
 
     if err := c.ShouldBindJSON(&input); err != nil {
@@ -50,36 +21,18 @@ func Login(c *gin.Context) {
         return
     }
 
-    token, err := models.GenerateToken(input.Username, input.Password)
+    host, err := models.HostAuthenticated(input.Email, input.Password)
+
+    tokenStr, err := utils.GenerateToken(host.ID)
 
     if err != nil {
         c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return
     }
 
-    c.JSON(http.StatusOK, gin.H{
-        "token": token,
-    })
-}
-
-func CurrentUser(c *gin.Context) {
-    userId, err := token.ExtractTokenId(c)
-
-    if err != nil {
-        c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
-        return
-    }
-
-    var user models.User
-
-    err = database.DB.First(&user, userId).Error
-
-    if err != nil {
-        c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
-        return
-    }
+    c.SetCookie("token", tokenStr, 3600, "/", "localhost", false, true)
 
     c.JSON(http.StatusOK, gin.H{
-        "data": user.PrepareOutput(),
+        "data": host,
     })
 }
